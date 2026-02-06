@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DHWANI-AI</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome (for icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <style>
+    :root{
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #9aa7b8;
+      --accent: #4cc9f0;
+      --accent-2: #2563eb;
+      --glass: rgba(255,255,255,0.03);
+      --success: #86efac;
+      --danger: #fb7185;
+      --radius: 12px;
+      --max-width: 1100px;
+      --soft: 14px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:"Inter",system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: linear-gradient(180deg, #061026 0%, #071028 45%, #081028 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding-bottom:48px;
+    }
+
+    /* Container */
+    .wrap{
+      max-width:var(--max-width);
+      margin:28px auto;
+      padding:20px;
+    }
+
+    /* Header / Nav */
+    header.app-header{
+      background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius:14px;
+      padding:16px 20px;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+      margin-bottom:18px;
+      backdrop-filter: blur(6px);
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center; text-decoration:none; color:inherit;
+    }
+    .brand .logo{
+      width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#021028; font-weight:800;
+      box-shadow: 0 6px 18px rgba(76,201,240,0.12), inset 0 -6px 10px rgba(255,255,255,0.03);
+    }
+    .brand h1{ font-size:1.05rem; margin:0; line-height:1; }
+    .brand p{ margin:0; font-size:0.78rem; color:var(--muted); }
+
+    nav.nav-right{ margin-left:auto; display:flex; gap:10px; align-items:center; }
+    nav.nav-right a{ color:var(--muted); text-decoration:none; font-weight:600; padding:8px 10px; border-radius:8px; }
+    nav.nav-right a.active, nav.nav-right a:hover{ color:white; background:var(--glass); }
+
+    /* Main grid */
+    .main-grid{
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:18px;
+      align-items:start;
+    }
+
+    /* Left Column - controls and results */
+    .panel{
+      background: rgba(255,255,255,0.02);
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.45);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .controls { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .btn {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 14px; border-radius:10px; border: none; cursor:pointer;
+      font-weight:600; color:#021028;
+      background: linear-gradient(180deg, #ffffff, #dbeafe);
+      box-shadow: 0 6px 18px rgba(2,6,23,0.25);
+    }
+    .btn.secondary{ background: linear-gradient(180deg, #f1f5f9, #e2e8f0); color:#021028; }
+    .btn.warn{ background: linear-gradient(180deg,#fef3c7,#fde68a); color:#04203b; }
+    .btn.ghost{
+      background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.03);
+      box-shadow:none; font-weight:600;
+    }
+
+    /* file name & player */
+    .file-info{ margin-top:12px; display:flex; gap:12px; align-items:center; color:var(--muted); font-size:0.95rem; }
+    .file-info strong{ color:#fff; font-weight:700; }
+
+    audio#audioPlayer{ width:100%; margin-top:12px; border-radius:10px; background:transparent; outline:none; }
+
+    /* Analysis boxes */
+    .result-grid{ display:grid; gap:12px; margin-top:14px; }
+    .result-box{
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+      padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02);
+    }
+    .result-box h3{ margin:0 0 8px 0; font-size:0.98rem; color:#e6eef8; }
+    .muted{ color:var(--muted); font-size:0.92rem; }
+
+    .labels { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:8px; }
+    .labels li{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:6px 10px; border-radius:999px; font-weight:600; color:#e6eef8; font-size:0.92rem;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .labels li .score{ color:var(--muted); font-weight:700; margin-left:8px; font-size:0.85rem; }
+
+    /* Right Column — Flow / Spectrogram or details */
+    .right-col{
+      position:relative;
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .heatmap{
+      height:240px; border-radius:12px; background: linear-gradient(180deg,#041028, #05122a);
+      border:1px solid rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; color:var(--muted);
+      font-weight:600;
+    }
+
+    /* Footer */
+    footer.app-footer{ margin-top:18px; text-align:center; color:var(--muted); font-size:0.9rem; padding:18px; opacity:0.95; }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .main-grid{ grid-template-columns: 1fr; }
+      nav.nav-right{ display:none; }
+      .wrap{ padding:12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- HEADER / NAV -->
+    <header class="app-header">
+      <a class="brand" href="#">
+        <div class="logo">ALM</div>
+        <div>
+          <h1>Audio Language Model</h1>
+          <p>DHWANI-AI</p>
+        </div>
+      </a>
+
+      <nav class="nav-right" role="navigation" aria-label="Main Navigation">
+        <a href="#" class="active"><i class="fas fa-home"></i> Home</a>
+        <a href="#"><i class="fas fa-stream"></i> Flow Mode</a>
+        <a href="#"><i class="fas fa-book"></i> Docs</a>
+        <a href="#"><i class="fas fa-circle-info"></i> About</a>
+      </nav>
+    </header>
+
+    <!-- MAIN GRID -->
+    <main class="main-grid">
+      <!-- LEFT -->
+      <section class="panel">
+        <h2 style="margin-top:0; margin-bottom:8px;">Audio Input & Control</h2>
+
+        <div class="controls">
+          <input id="audioFile" type="file" accept="audio/*" style="display:none" />
+          <button id="chooseFileBtn" class="btn"><i class="fas fa-file-audio"></i> Choose File</button>
+          <button id="recordButton" class="btn warn"><i class="fas fa-microphone"></i> Start Recording</button>
+          <button id="analyzeBtn" class="btn secondary"><i class="fas fa-brain"></i> Analyze Audio</button>
+          <button id="downloadBtn" class="btn ghost" title="Download transcript (if any)"><i class="fas fa-download"></i></button>
+        </div>
+
+        <div class="file-info" style="margin-top:12px;">
+          <span class="muted">Selected File:</span>
+          <strong id="fileName">None</strong>
+        </div>
+
+        <audio id="audioPlayer" controls style="display:none;"></audio>
+
+        <div class="result-grid">
+          <div id="descriptionBox" class="result-box">
+            <h3>Description</h3>
+            <div id="sceneDescriptionBox" class="muted">Upload an audio file or record audio and click Analyze to see a short description.</div>
+          </div>
+
+          <div id="transcriptionBox" class="result-box">
+            <h3>Transcription</h3>
+            <div id="transcriptionText" class="muted">(No transcription yet)</div>
+          </div>
+
+          <div id="eventsBox" class="result-box">
+            <h3>Detected Events</h3>
+            <div id="eventsCount" class="muted">(No events yet)</div>
+            <ul id="eventsGrid" class="labels" style="margin-top:10px;">
+              <!-- populated by script.js -->
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT -->
+      <aside class="right-col">
+        <div class="panel" style="padding:12px;">
+          <h3 style="margin:0 0 10px 0;">Live Flow Preview</h3>
+          <div class="heatmap" id="flowCanvas">Start Flow Mode to view live heatmap</div>
+          <div class="muted" style="margin-top:8px; font-size:0.9rem;">Realtime frequency heatmap & event log (mocked/demo)</div>
+        </div>
+
+        <div class="panel" style="padding:12px;">
+          <h3 style="margin:0 0 10px 0;">Details</h3>
+          <div class="muted" id="detailSummary">Duration: — • Speech: — • Non-speech events: —</div>
+          <div style="height:12px"></div>
+          <canvas id="spectrogramCanvas" width="800" height="160" style="width:100%; border-radius:8px; background:#020617;"></canvas>
+        </div>
+      </aside>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+      <div>© <strong>NIRVAN — Silent-Sphere</strong> • Advanced audio analysis (speech + non-speech)</div>
+      <div style="margin-top:6px;" class="muted">Built with Whisper, PANNs, FastAPI & Web Audio</div>
+    </footer>
+  </div>
+
+  <!-- your JS (keep your existing script.js file) -->
+  <script src="script.js"></script>
+
+  <!-- small inline helpers: show/hide audio player when needed -->
+  <script>
+    // small UI glue so your script.js can work seamlessly if it expects certain elements visible
+    (function(){
+      const audioPlayer = document.getElementById('audioPlayer');
+      const choose = document.getElementById('chooseFileBtn');
+      const audioFile = document.getElementById('audioFile');
+      const fileName = document.getElementById('fileName');
+
+      choose.addEventListener('click', ()=> audioFile.click());
+      audioFile.addEventListener('change', (e)=>{
+        const f = e.target.files[0];
+        if(!f) return;
+        fileName.textContent = f.name;
+        audioPlayer.src = URL.createObjectURL(f);
+        audioPlayer.style.display = 'block';
+      });
+    })();
+  </script>
+</body>
+</html>
